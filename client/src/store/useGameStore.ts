@@ -204,7 +204,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     const nextIndex = state.currentQuestionIndex + 1;
     let isFinished = nextIndex >= state.questions.length;
 
-    if ((state.settings?.mode === 'survival' || state.settings?.mode === 'fps_shooter') && !isCorrect) {
+    if (state.settings?.mode === 'survival' && !isCorrect) {
       isFinished = true;
     }
 
