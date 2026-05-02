@@ -7,7 +7,8 @@ export function handleListGames(_req: Request, res: Response) {
 }
 
 export function handleLoadGame(req: Request, res: Response) {
-  const game = storage.loadGame(req.params.id);
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const game = storage.loadGame(id as string);
   if (!game) {
     res.status(404).json({ error: 'Oyun bulunamadı.' });
     return;
@@ -32,7 +33,8 @@ export function handleSaveGame(req: Request, res: Response, next: NextFunction) 
 
 export function handleUpdateGame(req: Request, res: Response, next: NextFunction) {
   try {
-    const existing = storage.loadGame(req.params.id);
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const existing = storage.loadGame(id as string);
     if (!existing) {
       res.status(404).json({ error: 'Oyun bulunamadı.' });
       return;
@@ -46,7 +48,8 @@ export function handleUpdateGame(req: Request, res: Response, next: NextFunction
 }
 
 export function handleDeleteGame(req: Request, res: Response) {
-  const deleted = storage.deleteGame(req.params.id);
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const deleted = storage.deleteGame(id as string);
   if (!deleted) {
     res.status(404).json({ error: 'Oyun bulunamadı.' });
     return;
