@@ -1,37 +1,47 @@
-import api from './api';
-import type { AIRequestPayload, AITestPayload } from '../types/provider';
+import axios from 'axios';
 import type { Question } from '../types/question';
-import type { GameState, SavedGameSummary } from '../types/game';
+import type { ProviderType } from '../types/provider';
+import type { GameState } from '../types/game';
 
-export async function generateQuestions(payload: AIRequestPayload): Promise<Question[]> {
-  const { data } = await api.post<{ questions: Question[] }>('/ai/generate', payload);
-  return data.questions;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
+export async function generateQuestions(params: {
+  provider: ProviderType;
+  baseUrl: string;
+  apiKey: string;
+  model: string;
+  topic: string;
+  questionCount: number;
+  difficulty?: 'easy' | 'medium' | 'hard' | 'mixed';
+  mode?: string;
+}): Promise<Question[]> {
+  const response = await axios.post(`${API_BASE_URL}/ai/generate`, params);
+  return response.data.questions;
 }
 
-export async function testConnection(payload: AITestPayload): Promise<{ success: boolean; message: string }> {
-  const { data } = await api.post<{ success: boolean; message: string }>('/ai/test', payload);
-  return data;
-}
-
-export async function listGames(): Promise<SavedGameSummary[]> {
-  const { data } = await api.get<{ games: SavedGameSummary[] }>('/games');
-  return data.games;
+export async function saveGame(gameState: GameState): Promise<string> {
+  const response = await axios.post(`${API_BASE_URL}/games`, gameState);
+  return response.data.id;
 }
 
 export async function loadGame(id: string): Promise<GameState> {
-  const { data } = await api.get<{ game: GameState }>(`/games/${id}`);
-  return data.game;
+  const response = await axios.get(`${API_BASE_URL}/games/${id}`);
+  return response.data.game;
 }
 
-export async function saveGame(game: GameState): Promise<string> {
-  const { data } = await api.post<{ id: string }>('/games', game);
-  return data.id;
+export async function updateGame(id: string, gameState: Partial<GameState>): Promise<void> {
+  await axios.put(`${API_BASE_URL}/games/${id}`, gameState);
 }
 
-export async function updateGame(id: string, game: Partial<GameState>): Promise<void> {
-  await api.put(`/games/${id}`, game);
+export async function listGames(): Promise<GameState[]> {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/games`);
+    return response.data.games || [];
+  } catch {
+    return [];
+  }
 }
 
 export async function deleteGame(id: string): Promise<void> {
-  await api.delete(`/games/${id}`);
+  await axios.delete(`${API_BASE_URL}/games/${id}`);
 }
