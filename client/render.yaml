@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: ders-oyunlari-api
+    env: node
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
