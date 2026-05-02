@@ -23,9 +23,11 @@ export function generateSpinTarget(currentRotation: number): { targetIndex: numb
   const segmentCenter = getSegmentAngle(targetIndex).center;
   const offset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.4);
 
-  // We want the wheel to rest with segmentCenter at exactly top (270 degrees or -90)
-  // Target absolute angle (modulo 360) where wheel should land
-  const targetAbsoluteAngle = (((270 - segmentCenter + offset) % 360) + 360) % 360;
+  // The wheel is drawn with an offset of -90 degrees in describeArc.
+  // Segment 0 center is at (segmentCenter - 90) degrees initially.
+  // We want (segmentCenter - 90 + Rotation) = -90 (the top pointer position).
+  // Rotation = -segmentCenter.
+  const targetAbsoluteAngle = (((360 - segmentCenter + offset) % 360) + 360) % 360;
 
   // The current rotation within a 0-360 bound
   const currentMod = ((currentRotation % 360) + 360) % 360;

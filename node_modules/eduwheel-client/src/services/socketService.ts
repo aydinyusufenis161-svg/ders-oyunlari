@@ -46,9 +46,9 @@ class SocketService {
     this.socket?.emit('request_state', roomId);
   }
 
-  syncState(state: any) {
+  syncState(roomId: string, state: any) {
     if (!this.socket) return;
-    this.socket.emit('sync_state', { roomId: state.id, state });
+    this.socket.emit('sync_state', { roomId, state });
   }
 
   spinWheel(roomId: string, result: any) {

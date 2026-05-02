@@ -71,8 +71,8 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   broadcastState: () => {
     const s = get();
-    if (s.isMultiplayer && s.isHost) {
-      socketService.syncState(s.getSerializableState());
+    if (s.isMultiplayer && s.isHost && s.roomCode) {
+      socketService.syncState(s.roomCode, s.getSerializableState());
     }
   },
 
