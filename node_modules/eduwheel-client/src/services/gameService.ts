@@ -3,7 +3,7 @@ import type { Question } from '../types/question';
 import type { ProviderType } from '../types/provider';
 import type { GameState } from '../types/game';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8045/api';
 
 export async function generateQuestions(params: {
   provider: ProviderType;

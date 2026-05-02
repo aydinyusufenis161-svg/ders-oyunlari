@@ -22,7 +22,7 @@ export default function ConnectionTest() {
         return;
       }
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8045/api';
       const res = await axios.post(`${API_BASE_URL}/ai/test`, {
         provider,
         baseUrl,
