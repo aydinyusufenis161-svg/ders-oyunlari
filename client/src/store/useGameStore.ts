@@ -24,6 +24,7 @@ interface GameStore {
   isMultiplayer: boolean;
   roomCode: string | null;
   isHost: boolean;
+  myTeamIndex: number;
 
   initGame: (settings: GameSettings, id: string, multiplayerOptions?: { isMultiplayer: boolean; roomCode: string; isHost: boolean }) => void;
   setQuestions: (q: Question[]) => void;
@@ -68,6 +69,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   isMultiplayer: false,
   roomCode: null,
   isHost: false,
+  myTeamIndex: 0,
 
   broadcastState: () => {
     const s = get();
@@ -128,6 +130,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       isMultiplayer: multiplayerOptions?.isMultiplayer || false,
       roomCode: multiplayerOptions?.roomCode || null,
       isHost: multiplayerOptions?.isHost ?? true,
+      myTeamIndex: multiplayerOptions?.isMultiplayer ? (multiplayerOptions.isHost ? 0 : 1) : 0,
     });
 
     if (multiplayerOptions?.isMultiplayer && multiplayerOptions.roomCode) {
@@ -326,7 +329,8 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       timeLeft: null,
       isMultiplayer: false,
       roomCode: null,
-      isHost: false
+      isHost: false,
+      myTeamIndex: 0
     });
     socketService.disconnect();
   }

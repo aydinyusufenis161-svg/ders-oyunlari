@@ -84,7 +84,13 @@ export default function GamePlayPage() {
 
   const handleSpin = useCallback(() => {
     if (store.settings?.mode !== 'wheel') return;
-    if (store.isSpinning || store.showQuestion || (!store.isHost && store.isMultiplayer)) return;
+    
+    if (store.isMultiplayer && store.myTeamIndex !== store.currentTeamTurn) {
+      toast.error('Sıra sizde değil! Diğer oyuncuyu bekleyin.');
+      return;
+    }
+
+    if (store.isSpinning || store.showQuestion) return;
 
     // Clear previous segment explanation only when user spins again.
     setSegmentMessage(null);
@@ -145,6 +151,11 @@ export default function GamePlayPage() {
 
   const handleAnswer = useCallback(
     (answer: string, isCorrect: boolean) => {
+      if (store.isMultiplayer && store.myTeamIndex !== store.currentTeamTurn) {
+        toast.error('Sırası olan oyuncuyu bekleyiniz.');
+        return;
+      }
+
       store.answerQuestion(answer, isCorrect);
       if (isCorrect) {
         AudioEngine.playCorrect();
@@ -271,7 +282,10 @@ export default function GamePlayPage() {
               ) : (
                 isWheelMode &&
                 !store.isSpinning && (
-                  <WheelControls onSpin={handleSpin} disabled={store.isSpinning || store.showQuestion || (!store.isHost && store.isMultiplayer)} />
+                  <WheelControls 
+                    onSpin={handleSpin} 
+                    disabled={store.isSpinning || store.showQuestion || (store.isMultiplayer && store.myTeamIndex !== store.currentTeamTurn)} 
+                  />
                 )
               )}
         </div>
