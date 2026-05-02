@@ -1,4 +1,4 @@
-export type ProviderType = 'openai' | 'anthropic' | 'gemini' | 'groq';
+export type ProviderType = 'openai' | 'anthropic' | 'gemini' | 'groq' | 'openrouter';
 
 export interface ChatParams {
   apiKey: string;

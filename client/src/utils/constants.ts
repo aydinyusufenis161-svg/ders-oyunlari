@@ -43,6 +43,12 @@ export const PROVIDER_CONFIGS: Record<ProviderType, ProviderConfig> = {
     models: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'],
     icon: 'groq',
   },
+  openrouter: {
+    name: 'OpenRouter',
+    baseUrl: 'https://openrouter.ai/api',
+    models: ['anthropic/claude-3.5-sonnet', 'openai/gpt-4o', 'google/gemini-1.5-pro'],
+    icon: 'openrouter',
+  },
 };
 
 export const QUESTION_COUNTS = [10, 20, 50, 100] as const;

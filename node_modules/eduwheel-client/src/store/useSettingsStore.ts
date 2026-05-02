@@ -22,20 +22,22 @@ export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
       provider: 'openai',
-      apiKeys: { openai: '', anthropic: '', gemini: '', groq: '' },
+      apiKeys: { openai: '', anthropic: '', gemini: '', groq: '', openrouter: '' },
       selectedModels: {
         openai: 'gpt-4o-mini',
         anthropic: 'claude-sonnet-4-20250514',
         gemini: 'gemini-2.0-flash',
         groq: 'llama-3.3-70b-versatile',
+        openrouter: 'openai/gpt-4o',
       },
       baseUrls: {
         openai: PROVIDER_CONFIGS.openai.baseUrl,
         anthropic: PROVIDER_CONFIGS.anthropic.baseUrl,
         gemini: PROVIDER_CONFIGS.gemini.baseUrl,
         groq: PROVIDER_CONFIGS.groq.baseUrl,
+        openrouter: PROVIDER_CONFIGS.openrouter.baseUrl,
       },
-      savedModels: { openai: [], anthropic: [], gemini: [], groq: [] },
+      savedModels: { openai: [], anthropic: [], gemini: [], groq: [], openrouter: [] },
       setProvider: (p) => set({ provider: p }),
       setApiKey: (provider, key) =>
         set((state) => ({ apiKeys: { ...state.apiKeys, [provider]: key } })),

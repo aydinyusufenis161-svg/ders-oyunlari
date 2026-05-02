@@ -1,17 +1,12 @@
 import { useState } from 'react';
 import { useSettingsStore } from '../../store/useSettingsStore';
-import { OPENROUTER_MODELS, OLLAMA_MODELS, GOOGLE_MODELS } from '../../utils/constants';
+import { PROVIDER_CONFIGS } from '../../utils/constants';
 
 export default function ModelSelector() {
   const { provider, selectedModels, setModel, saveModel, removeSavedModel, savedModels } = useSettingsStore();
   const [customModel, setCustomModel] = useState('');
 
-  // Fallback to empty array if constants are missing
-  const modelOptions = 
-    provider === 'openai' ? [] :
-    provider === 'anthropic' ? [] :
-    provider === 'gemini' ? (GOOGLE_MODELS || []) :
-    provider === 'groq' ? [] : [];
+  const standardModels = PROVIDER_CONFIGS[provider]?.models || [];
 
   const handleSaveCustom = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,10 +41,10 @@ export default function ModelSelector() {
 
           {/* Fallback to standard models if available */}
           <optgroup label="Standart Modeller">
-            {modelOptions.length > 0 ? (
-              modelOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
+            {standardModels.length > 0 ? (
+              standardModels.map((modelId) => (
+                <option key={modelId} value={modelId}>
+                  {modelId}
                 </option>
               ))
             ) : (
