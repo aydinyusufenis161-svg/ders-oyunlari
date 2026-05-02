@@ -256,7 +256,7 @@ export default function GamePlayPage() {
                   rotation={store.wheelRotation}
                   isSpinning={store.isSpinning}
                   onSpinComplete={handleSpinComplete}
-                  isHost={store.isHost}
+                  isMyTurn={store.myTeamIndex === store.currentTeamTurn}
                 />
               )}
 

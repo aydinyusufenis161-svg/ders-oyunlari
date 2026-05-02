@@ -6,7 +6,7 @@ interface WheelProps {
   rotation: number;
   isSpinning: boolean;
   onSpinComplete: () => void;
-  isHost?: boolean;
+  isMyTurn?: boolean;
 }
 
 const SIZE = 400;
@@ -14,7 +14,7 @@ const CENTER = SIZE / 2;
 const RADIUS = SIZE / 2 - 10;
 const SEGMENT_COUNT = WHEEL_SEGMENTS.length;
 
-export default function Wheel({ rotation, isSpinning, onSpinComplete, isHost = true }: WheelProps) {
+export default function Wheel({ rotation, isSpinning, onSpinComplete, isMyTurn = true }: WheelProps) {
   return (
     <div className="relative inline-flex items-center justify-center">
       {/* Pointer */}
@@ -37,7 +37,7 @@ export default function Wheel({ rotation, isSpinning, onSpinComplete, isHost = t
             : { duration: 0 }
         }
         onAnimationComplete={() => {
-          if (isSpinning && isHost) onSpinComplete();
+          if (isSpinning && isMyTurn) onSpinComplete();
         }}
         style={{ willChange: 'transform' }}
       >

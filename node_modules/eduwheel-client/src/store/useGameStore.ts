@@ -73,30 +73,28 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   broadcastState: () => {
     const s = get();
-    if (s.isMultiplayer && s.isHost && s.roomCode) {
+    if (s.isMultiplayer && s.roomCode) {
       socketService.syncState(s.roomCode, s.getSerializableState());
     }
   },
 
   applyRemoteState: (state) => {
-    if (!get().isHost) {
-      set({
-        gameId: state.id,
-        settings: state.settings,
-        status: state.status,
-        teams: state.teams,
-        questions: state.questions,
-        currentQuestionIndex: state.currentQuestionIndex,
-        currentTeamTurn: state.currentTeamTurn,
-        wheelHistory: state.wheelHistory,
-        answeredQuestions: state.answeredQuestions,
-        wheelRotation: state.wheelRotation,
-        isSpinning: state.isSpinning,
-        showQuestion: state.showQuestion,
-        pendingPoints: state.pendingPoints,
-        timeLeft: state.timeLeft,
-      });
-    }
+    set({
+      gameId: state.id,
+      settings: state.settings,
+      status: state.status,
+      teams: state.teams,
+      questions: state.questions,
+      currentQuestionIndex: state.currentQuestionIndex,
+      currentTeamTurn: state.currentTeamTurn,
+      wheelHistory: state.wheelHistory,
+      answeredQuestions: state.answeredQuestions,
+      wheelRotation: state.wheelRotation,
+      isSpinning: state.isSpinning,
+      showQuestion: state.showQuestion,
+      pendingPoints: state.pendingPoints,
+      timeLeft: state.timeLeft,
+    });
   },
 
   initGame: (settings, id, multiplayerOptions) => {
