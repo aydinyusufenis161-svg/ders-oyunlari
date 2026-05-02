@@ -4,7 +4,7 @@ import { useSettingsStore } from '../../store/useSettingsStore';
 import Button from '../common/Button';
 
 export default function ConnectionTest() {
-  const config = useSettingsStore(s => s.getActiveConfig());
+  const getActiveConfig = useSettingsStore(s => s.getActiveConfig);
   const [status, setStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
@@ -13,7 +13,9 @@ export default function ConnectionTest() {
     setMessage('Bağlantı test ediliyor...');
 
     try {
+      const config = getActiveConfig();
       const { provider, baseUrl, apiKey, model } = config;
+      
       if (!apiKey && provider !== 'ollama') {
         setStatus('error');
         setMessage('API Anahtarı eksik!');
