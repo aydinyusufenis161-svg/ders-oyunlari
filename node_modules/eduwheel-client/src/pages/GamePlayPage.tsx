@@ -91,8 +91,8 @@ export default function GamePlayPage() {
     setSegmentMessage(null);
 
     store.setIsSpinning(true);
-    const { targetIndex, totalRotation } = generateSpinTarget();
-    setRotation((prev) => prev + totalRotation);
+    const { targetIndex, totalRotation } = generateSpinTarget(rotation);
+    setRotation(totalRotation);
 
     const segment = WHEEL_SEGMENTS[targetIndex];
     store.setWheelResult({
@@ -207,6 +207,11 @@ export default function GamePlayPage() {
           <h1 className="text-lg font-bold text-slate-800">{store.settings?.topic}</h1>
           <div className="flex items-center gap-3">
             <p className="text-xs font-semibold text-indigo-500 uppercase tracking-widest">{store.settings?.mode.replace(/_/g, ' ')}</p>
+            {store.isMultiplayer && store.roomCode && (
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs tracking-wider border border-emerald-200">
+                Oda Kodu: {store.roomCode}
+              </span>
+            )}
             {store.settings?.mode === 'time_attack' && store.timeLeft !== null && (
               <span className="px-2.5 py-0.5 rounded-full bg-red-100 text-red-600 font-bold text-xs animate-pulse">
                 {store.timeLeft} Saniye Kaldı

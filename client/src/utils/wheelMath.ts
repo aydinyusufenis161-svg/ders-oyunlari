@@ -16,23 +16,28 @@ export function angleToSegmentIndex(angle: number): number {
   return Math.floor(pointerAngle / SEGMENT_ANGLE) % SEGMENT_COUNT;
 }
 
-export function generateSpinTarget(): { targetIndex: number; totalRotation: number } {
+export function generateSpinTarget(currentRotation: number): { targetIndex: number; totalRotation: number } {
   const targetIndex = Math.floor(Math.random() * SEGMENT_COUNT);
   const fullSpins = 5 + Math.floor(Math.random() * 6);
 
-  // The wheel SVG is usually drawn starting from top (or right), and we want the segment center
-  // to land perfectly under the top pointer.
-  // If pointer is at top (270 deg or -90 deg), we need an offset. The exact math depends on SVG drawing.
-  // Standard SVG starts 0 at right (3 o'clock). Top pointer is at -90 (or 270).
   const segmentCenter = getSegmentAngle(targetIndex).center;
   const offset = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.4);
 
-  // Here we adjust based on the visual offset gap you reported.
-  // We subtract 90 to align 0 degree rotation from top to right,
-  // and subtract segmentCenter to rotate backwards so the target hits the pointer.
-  const targetAngle = fullSpins * 360 - segmentCenter - 90;
+  // We want the wheel to rest with segmentCenter at exactly top (270 degrees or -90)
+  // Target absolute angle (modulo 360) where wheel should land
+  const targetAbsoluteAngle = (((270 - segmentCenter + offset) % 360) + 360) % 360;
 
-  return { targetIndex, totalRotation: targetAngle + offset };
+  // The current rotation within a 0-360 bound
+  const currentMod = ((currentRotation % 360) + 360) % 360;
+  
+  // How much more we need to rotate to hit the target modulo angle
+  let diff = targetAbsoluteAngle - currentMod;
+  if (diff < 0) diff += 360;
+
+  // The new absolute rotation
+  const totalRotation = currentRotation + (fullSpins * 360) + diff;
+
+  return { targetIndex, totalRotation };
 }
 
 export function describeArc(
