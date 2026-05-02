@@ -43,6 +43,10 @@ io.on('connection', (socket) => {
     socket.to(roomId).emit('state_updated', state);
   });
   
+  socket.on('request_state', (roomId: string) => {
+    socket.to(roomId).emit('state_requested');
+  });
+  
   socket.on('spin_wheel', ({ roomId, result }: { roomId: string, result: any }) => {
     socket.to(roomId).emit('wheel_spun', result);
   });

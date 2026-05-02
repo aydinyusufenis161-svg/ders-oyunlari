@@ -22,7 +22,6 @@ export default function GamePlayPage() {
   const navigate = useNavigate();
   const store = useGameStore();
   const settings = useSettingsStore();
-  const [rotation, setRotation] = useState(0);
   const [segmentMessage, setSegmentMessage] = useState<string | null>(null);
   const didRequestQuestionsRef = useRef(false);
 
@@ -85,21 +84,20 @@ export default function GamePlayPage() {
 
   const handleSpin = useCallback(() => {
     if (store.settings?.mode !== 'wheel') return;
-    if (store.isSpinning || store.showQuestion) return;
+    if (store.isSpinning || store.showQuestion || (!store.isHost && store.isMultiplayer)) return;
 
     // Clear previous segment explanation only when user spins again.
     setSegmentMessage(null);
 
     store.setIsSpinning(true);
-    const { targetIndex, totalRotation } = generateSpinTarget(rotation);
-    setRotation(totalRotation);
+    const { targetIndex, totalRotation } = generateSpinTarget(store.wheelRotation);
 
     const segment = WHEEL_SEGMENTS[targetIndex];
     store.setWheelResult({
       segmentIndex: targetIndex,
       segment,
       appliedPoints: segment.value,
-    });
+    }, totalRotation);
   }, [store]);
 
   const handleSpinComplete = useCallback(() => {
@@ -244,9 +242,10 @@ export default function GamePlayPage() {
 
               {isWheelMode && (
                 <Wheel
-                  rotation={rotation}
+                  rotation={store.wheelRotation}
                   isSpinning={store.isSpinning}
                   onSpinComplete={handleSpinComplete}
+                  isHost={store.isHost}
                 />
               )}
 
@@ -272,7 +271,7 @@ export default function GamePlayPage() {
               ) : (
                 isWheelMode &&
                 !store.isSpinning && (
-                  <WheelControls onSpin={handleSpin} disabled={store.isSpinning || store.showQuestion} />
+                  <WheelControls onSpin={handleSpin} disabled={store.isSpinning || store.showQuestion || (!store.isHost && store.isMultiplayer)} />
                 )
               )}
         </div>

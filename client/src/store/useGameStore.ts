@@ -15,6 +15,7 @@ interface GameStore {
   answeredQuestions: AnsweredQuestion[];
   wheelHistory: WheelResult[];
   isSpinning: boolean;
+  wheelRotation: number;
   showQuestion: boolean;
   pendingPoints: number;
   timeLeft: number | null; // For time_attack mode
@@ -27,7 +28,7 @@ interface GameStore {
   initGame: (settings: GameSettings, id: string, multiplayerOptions?: { isMultiplayer: boolean; roomCode: string; isHost: boolean }) => void;
   setQuestions: (q: Question[]) => void;
   setStatus: (s: GameStatus) => void;
-  setWheelResult: (r: WheelResult) => void;
+  setWheelResult: (r: WheelResult, rotationTarget: number) => void;
   setIsSpinning: (v: boolean) => void;
   setShowQuestion: (v: boolean) => void;
   setPendingPoints: (p: number) => void;
@@ -59,6 +60,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   answeredQuestions: [],
   wheelHistory: [],
   isSpinning: false,
+  wheelRotation: 0,
   showQuestion: false,
   pendingPoints: 0,
   timeLeft: null,
@@ -69,7 +71,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   broadcastState: () => {
     const s = get();
-    if (s.isMultiplayer && (s.isHost || true)) {
+    if (s.isMultiplayer && s.isHost) {
       socketService.syncState(s.getSerializableState());
     }
   },
@@ -86,6 +88,11 @@ export const useGameStore = create<GameStore>()((set, get) => ({
         currentTeamTurn: state.currentTeamTurn,
         wheelHistory: state.wheelHistory,
         answeredQuestions: state.answeredQuestions,
+        wheelRotation: state.wheelRotation,
+        isSpinning: state.isSpinning,
+        showQuestion: state.showQuestion,
+        pendingPoints: state.pendingPoints,
+        timeLeft: state.timeLeft,
       });
     }
   },
@@ -113,6 +120,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       wheelHistory: [],
       questions: [],
       isSpinning: false,
+      wheelRotation: 0,
       showQuestion: false,
       pendingPoints: 0,
       timeLeft: isTimeAttack ? 60 : null,
@@ -130,7 +138,10 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   setQuestions: (q) => { set({ questions: q, status: 'playing' }); get().broadcastState(); },
   setStatus: (s) => { set({ status: s }); get().broadcastState(); },
-  setWheelResult: (r) => { set({ wheelResult: r, wheelHistory: [...get().wheelHistory, r] }); get().broadcastState(); },
+  setWheelResult: (r, rotationTarget) => { 
+    set({ wheelResult: r, wheelHistory: [...get().wheelHistory, r], wheelRotation: rotationTarget }); 
+    get().broadcastState(); 
+  },
   setIsSpinning: (v) => { set({ isSpinning: v }); get().broadcastState(); },
   setShowQuestion: (v) => { set({ showQuestion: v }); get().broadcastState(); },
   setPendingPoints: (p) => { set({ pendingPoints: p }); get().broadcastState(); },
@@ -266,6 +277,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       answeredQuestions: saved.answeredQuestions,
       wheelHistory: saved.wheelHistory,
       isSpinning: false,
+      wheelRotation: 0,
       showQuestion: !isWheelMode,
       pendingPoints: !isWheelMode ? 10 : 0,
       timeLeft: saved.settings.mode === 'time_attack' ? 60 : null,
@@ -285,6 +297,11 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       currentTeamTurn: s.currentTeamTurn,
       wheelHistory: s.wheelHistory,
       answeredQuestions: s.answeredQuestions,
+      wheelRotation: s.wheelRotation,
+      isSpinning: s.isSpinning,
+      showQuestion: s.showQuestion,
+      pendingPoints: s.pendingPoints,
+      timeLeft: s.timeLeft,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -303,6 +320,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       answeredQuestions: [],
       wheelHistory: [],
       isSpinning: false,
+      wheelRotation: 0,
       showQuestion: false,
       pendingPoints: 0,
       timeLeft: null,
@@ -319,11 +337,9 @@ socketService.onStateUpdated((state) => {
   useGameStore.getState().applyRemoteState(state);
 });
 
-socketService.onWheelSpun((result) => {
+socketService.onStateRequested(() => {
   const store = useGameStore.getState();
-  if (!store.isHost) {
-    store.setIsSpinning(true);
-    // Remote client wheel completion logic would likely just be trusting
-    // the next state update, but we can trigger a visual effect.
+  if (store.isMultiplayer && store.isHost) {
+    store.broadcastState();
   }
 });

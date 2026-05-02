@@ -32,11 +32,18 @@ class SocketService {
       const listener = this.listeners.get('wheel_spun');
       if (listener) listener(result);
     });
+
+    this.socket.on('state_requested', () => {
+      const listener = this.listeners.get('state_requested');
+      if (listener) listener();
+    });
   }
 
   joinRoom(roomId: string) {
     if (!this.socket) this.connect();
     this.socket?.emit('join_room', roomId);
+    // Request state from the host
+    this.socket?.emit('request_state', roomId);
   }
 
   syncState(state: any) {
@@ -55,6 +62,10 @@ class SocketService {
 
   onWheelSpun(callback: (result: any) => void) {
     this.listeners.set('wheel_spun', callback);
+  }
+
+  onStateRequested(callback: () => void) {
+    this.listeners.set('state_requested', callback);
   }
 
   disconnect() {
