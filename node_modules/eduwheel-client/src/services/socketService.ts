@@ -7,9 +7,12 @@ class SocketService {
   connect() {
     if (this.socket?.connected) return;
 
+    const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const DEFAULT_SERVER_URL = isLocalhost ? 'http://localhost:3001' : 'https://ders-oyunlari-api.onrender.com';
+
     const SERVER_URL = import.meta.env.VITE_API_URL 
       ? import.meta.env.VITE_API_URL.replace('/api', '') 
-      : 'http://localhost:8045';
+      : DEFAULT_SERVER_URL;
 
     this.socket = io(SERVER_URL, {
       transports: ['websocket'],
